@@ -1,0 +1,10 @@
+% title 'Chat!';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+<div id="chat_window">
+    <textarea class="span12" id="log" rows="30" readonly></textarea>
+    <input class="span12" id="msg" type="text" />
+</div>
+
+%= include 'elements/footer'
