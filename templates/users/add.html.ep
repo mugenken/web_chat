@@ -1,0 +1,37 @@
+% title 'Register';
+%= include 'elements/topnav'
+%= include 'elements/flash'
+
+%= form_for '/users/new' => ( method => 'POST', class => 'well form-horizontal') => begin
+    <div class="control-group">
+        <label class="control-label">Login Name</label>
+        <div class="controls">
+                %= text_field 'login', class => 'span3', type => 'text'
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Email Address</label>
+        <div class="controls">
+                %= text_field 'email', class => 'span3', type => 'text'
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Password</label>
+        <div class="controls">
+                %= password_field 'password'
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Password Verification</label>
+        <div class="controls">
+                %= password_field 'password_verify'
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+                %= submit_button 'Send', class => 'btn'
+        </div>
+    </div>
+    % end
+
+%= include 'elements/footer'

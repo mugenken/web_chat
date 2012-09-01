@@ -135,7 +135,7 @@ sub startup {
     }
 
     # user related
-    $r->get('/register')->to('users#new');
+    $r->get('/register')->to('users#add');
     $r->get('/login')->to('auth#login');
     $r->get('/logout')->over('authenticated')->to('auth#logout');
     $r->post('/authenticate')->to('auth#authenticate');

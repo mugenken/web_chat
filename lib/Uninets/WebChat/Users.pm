@@ -1,9 +1,8 @@
 package Uninets::WebChat::Users;
 use Mojo::Base 'Mojolicious::Controller';
-
 use Email::Valid;
 
-sub new {
+sub add {
     my $self = shift;
 
     $self->layout(undef) if $self->req->is_xhr;
@@ -11,7 +10,9 @@ sub new {
 }
 
 sub edit {
+    my $self = shift;
 
+    return 1;
 }
 
 sub create {
@@ -35,8 +36,18 @@ sub create {
         $self->redirect_to('/register');
     }
 
-    # trim and check if user exists
-    my $login = $self->trim($self->param('username'));
+    # validate user
+    my $login = $self->trim($self->param('login'));
+
+    unless ($login){
+        $self->flash(
+            class   => 'alert alert-error',
+            message => 'Username must not be empty!',
+        );
+
+        $self->redirect_to('/register');
+    }
+
     my $user_exists = $self->model('User')->exists($login);
 
     if ($user_exists){
@@ -48,10 +59,29 @@ sub create {
         $self->redirect_to('/register');
     }
 
+    # validate passwords
+    unless ($self->param('password')){
+        $self->flash(
+            class   => 'alert alert-error',
+            message => 'Password must not be empty!',
+        );
+
+        $self->redirect_to('/register');
+    }
+
+    if ($self->param('password') ne $self->param('password_verification')){
+        $self->flash(
+            class   => 'alert alert-error',
+            message => 'Passwords do not match!',
+        );
+
+        $self->redirect_to('/register');
+    }
+
     # fill the record
     if ($email && !$user_exists){
         $record->{email} = $email;
-        $record->{login} = $self->param('username');
+        $record->{login} = $self->param('login');
         $record->{password} = $self->encrypt_password($self->param('password'));
         $record->{activation_token} = $self->get_random_token();
     }
@@ -74,6 +104,9 @@ sub create {
 }
 
 sub activate {
+    my $self = shift;
+
+    return 1;
 
 }
 
@@ -84,10 +117,16 @@ sub read {
 }
 
 sub update {
+    my $self = shift;
+
+    return 1;
 
 }
 
 sub delete {
+    my $self = shift;
+
+    return 1;
 
 }
 

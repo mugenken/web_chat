@@ -18,6 +18,7 @@
                     <li><a class="fancybox.ajax fancy-link" href="/users/edit/<%= $user->{id} %>"><%= $user->{login} %></a></li>
                     <li><a href="/logout">Logout</a></li>
                 % } else {
+                    <li><a href="/register">Register</a></li>
                     <li><a href="/login">Login</a></li>
                 % }
             </ul>
