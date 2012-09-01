@@ -140,6 +140,8 @@ sub startup {
     $r->get('/logout')->over('authenticated')->to('auth#logout');
     $r->post('/authenticate')->to('auth#authenticate');
     $r->post('/users/new')->to('users#create');
+    $r->get('/users/list')->over('admin_role')->to('users#read');
+    $r->get('/users/edit/:id')->over('authenticated')->to('users#edit');
     $r->get('/activate/:token')->to('users#activate');
 
     # chat

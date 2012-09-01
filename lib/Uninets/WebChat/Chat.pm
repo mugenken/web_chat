@@ -14,7 +14,7 @@ sub window {
 sub socket {
     my $self = shift;
 
-    my $name = $self->session->{user}->{login};
+    my $name = $self->session->{user}->{login} . '@' . $self->tx->remote_address;
     my $clients = $self->clients($name, $self->tx);
     my $json = Mojo::JSON->new;
 

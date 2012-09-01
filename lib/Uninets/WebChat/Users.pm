@@ -12,7 +12,8 @@ sub add {
 sub edit {
     my $self = shift;
 
-    return 1;
+    $self->layout(undef) if $self->req->is_xhr;
+    $self->render( template => 'users/add' );
 }
 
 sub create {
@@ -113,6 +114,7 @@ sub activate {
 sub read {
     my $self = shift;
 
+    $self->layout(undef) if $self->req->is_xhr;
     $self->render(userlist => $self->model('User')->get_all);
 }
 
