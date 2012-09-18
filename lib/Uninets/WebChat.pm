@@ -25,6 +25,7 @@ sub startup {
         session_secret => 'dQiGD3lE0CUwPQAXAod9hhi6sBSV0DqQDIWoPCd0Ukglu6NiA2maJWhVxfWPH05',
         keep_alive_token => '5a3a3316a166242932ea754c25',
         loglevel => 'debug',
+        timeout => 300,
     };
 
     if ( -f $config_file ){
@@ -149,6 +150,7 @@ sub startup {
     $r->get('/chat')->over('authenticated')->to('chat#window');
     $r->websocket('/socket')->over('authenticated')->to('chat#socket');
     $r->get('/token')->over('authenticated')->to('chat#token');
+    $r->get('/timeout')->over('authenticated')->to('chat#timeout');
 
     # defaults
     $self->defaults( layout => 'uninets' );

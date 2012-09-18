@@ -3,6 +3,7 @@ class Uninets
     settings:
         keep_alive: true
         keep_alive_token: 'test123'
+        timeout: 300
         ws_url: 'ws://' + location.host + '/socket'
 
     flash: (message, cl) ->
@@ -13,6 +14,11 @@ class Uninets
         self = @
         $.get '/token', (msg) ->
             self.settings.keep_alive_token = msg.token
+
+    getTimeout: () ->
+        self = @
+        $.get '/timeout', (msg) ->
+            self.settings.timeout = msg.timeout
 
     chat: (keep_alive) ->
         self = @
@@ -37,11 +43,12 @@ class Uninets
             log '[' + res.hms + '] ' + res.name + ': ' + res.text
 
         self.getToken()
+        self.getTimeout()
 
         keep_alive_fun = () ->
             socket.send self.settings.keep_alive_token
             if keep_alive
-                setTimeout keep_alive_fun, 5000
+                setTimeout keep_alive_fun, self.settings.timeout * 1000
 
         setTimeout keep_alive_fun, 1000
 

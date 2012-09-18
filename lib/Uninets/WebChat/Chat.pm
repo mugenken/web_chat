@@ -16,6 +16,9 @@ sub socket {
 
     my $name = $self->session->{user}->{login} . '@' . $self->tx->remote_address;
     my $clients = $self->clients($name, $self->tx);
+
+    Mojo::IOLoop->stream($self->tx->connection)->timeout($self->config->{timeout});
+
     my $json = Mojo::JSON->new;
 
     $self->on(
@@ -66,6 +69,14 @@ sub token {
     my $self = shift;
     my $json = Mojo::JSON->new;
     $self->render_json({token => $self->config->{keep_alive_token}});
+}
+
+sub timeout {
+    my $self = shift;
+    my $json = Mojo::JSON->new;
+    # send timeout - 10% to the client
+    # the client will never timeout as long as the browser window is open
+    $self->render_json({timeout => int($self->config->{timeout} - $self->config->{timeout} * 0.1) });
 }
 
 1;
