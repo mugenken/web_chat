@@ -14,8 +14,10 @@ sub window {
 sub socket {
     my $self = shift;
 
-    my $name = $self->session->{user}->{login} . '@' . $self->tx->remote_address;
-    my $clients = $self->clients($name, $self->tx);
+    my $name = $self->session->{user}->{login};
+    my $clients = $self->clients($name, 'chat_socket', $self->tx);
+
+    say for keys %$clients;
 
     Mojo::IOLoop->stream($self->tx->connection)->timeout($self->config->{timeout});
 
@@ -30,7 +32,7 @@ sub socket {
                 my $dt   = DateTime->now( time_zone => 'Europe/Berlin' );
 
                 for (keys %$clients){
-                    $clients->{$_}->send(
+                    $clients->{$_}->{chat_socket}->send(
                         $json->encode(
                             {
                                 name => $name,
@@ -51,13 +53,51 @@ sub socket {
             my $dt   = DateTime->now( time_zone => 'Europe/Berlin' );
 
             for (keys %$clients){
-                $clients->{$_}->send(
+                $clients->{$_}->{chat_socket}->send(
                     $json->encode(
                         {
                             name => $name,
                             hms  => $dt->hms,
                             text => 'disconnected',
                         }
+                    )
+                );
+            }
+            for (keys %$clients){
+                $clients->{$_}->{ul_socket}->send(
+                    $json->encode(
+                        {
+                            clients => [ grep { $_ ne $name } keys %$clients],
+                        },
+                    )
+                );
+            }
+
+            delete $self->clients->{$name};
+        }
+    );
+}
+
+sub userlist {
+    my $self = shift;
+
+    my $name = $self->session->{user}->{login};
+    my $clients = $self->clients($name, 'ul_socket', $self->tx);
+    Mojo::IOLoop->stream($self->tx->connection)->timeout($self->config->{timeout});
+
+    my $json = Mojo::JSON->new;
+
+    $self->on(
+        message => sub {
+            my ($self, $msg) = @_;
+            my $token = $self->config->{keep_alive_token};
+
+            for (keys %$clients){
+                $clients->{$_}->{ul_socket}->send(
+                    $json->encode(
+                        {
+                            clients => [keys %$clients],
+                        },
                     )
                 );
             }

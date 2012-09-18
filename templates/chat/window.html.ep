@@ -3,8 +3,13 @@
 %= include 'elements/flash'
 
 <div id="chat_window">
-    <textarea class="span12" id="log" rows="30" readonly></textarea>
-    <input class="span12" id="msg" type="text" />
+    <div class="span2">
+        <textarea class="span2" id="userlist" rows="30" readonly></textarea>
+    </div>
+    <div class="span9">
+        <textarea class="span10" id="log" rows="30" readonly></textarea>
+        <input class="span10" id="msg" type="text" />
+    </div>
 </div>
 
 %= include 'elements/footer'

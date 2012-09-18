@@ -5,6 +5,7 @@ class Uninets
         keep_alive_token: 'test123'
         timeout: 300
         ws_url: 'ws://' + location.host + '/socket'
+        ul_url: 'ws://' + location.host + '/userlist'
 
     flash: (message, cl) ->
         flash_msg = humane.create
@@ -26,19 +27,31 @@ class Uninets
 
         $('#msg').keydown (e) ->
             if e.keyCode == 13
-                socket.send $('#msg').val()
+                chat_socket.send $('#msg').val()
                 $('#msg').val('')
 
         log = (message) ->
             $('#log').val $('#log').val() + message + "\n"
 
-        socket = new WebSocket self.settings.ws_url
+        ul  = (list) ->
+            $('#userlist').val ''
+            $('#userlist').val $('#userlist').val() + user + "\n" for user in list
 
-        socket.onopen = () ->
+        chat_socket = new WebSocket self.settings.ws_url
+        ul_socket   = new WebSocket self.settings.ul_url
+
+        ul_socket.onopen = () ->
+            ul ['fetching user list']
+
+        ul_socket.onmessage = (msg) ->
+            res = JSON.parse msg.data
+            ul res.clients
+
+        chat_socket.onopen = () ->
             log 'Connection opened'
-            socket.send 'connected'
+            chat_socket.send 'connected'
 
-        socket.onmessage = (msg) ->
+        chat_socket.onmessage = (msg) ->
             res = JSON.parse msg.data
             log '[' + res.hms + '] ' + res.name + ': ' + res.text
 
@@ -46,7 +59,8 @@ class Uninets
         self.getTimeout()
 
         keep_alive_fun = () ->
-            socket.send self.settings.keep_alive_token
+            chat_socket.send self.settings.keep_alive_token
+            ul_socket.send self.settings.keep_alive_token
             if keep_alive
                 setTimeout keep_alive_fun, self.settings.timeout * 1000
 

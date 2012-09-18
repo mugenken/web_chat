@@ -87,9 +87,9 @@ sub startup {
             return ($check_id == $self->session('user')->{id} || $self->session('role')->{name} eq 'admin') ? 1 : 0;
         },
         clients => sub {
-            my ($self, $name, $client) = @_;
+            my ($self, $name, $socket, $tx) = @_;
 
-            $socket_clients->{$name} = $client if defined $name;
+            $socket_clients->{$name}->{$socket} = $tx if defined $name;
 
             return $socket_clients;
         },
@@ -149,6 +149,7 @@ sub startup {
     $r->get('/')->to('chat#window');
     $r->get('/chat')->over('authenticated')->to('chat#window');
     $r->websocket('/socket')->over('authenticated')->to('chat#socket');
+    $r->websocket('/userlist')->over('authenticated')->to('chat#userlist');
     $r->get('/token')->over('authenticated')->to('chat#token');
     $r->get('/timeout')->over('authenticated')->to('chat#timeout');
 
